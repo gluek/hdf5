@@ -139,3 +139,16 @@ func (s *Attribute) Write(data interface{}, dtype *Datatype) error {
 	err := h5err(rc)
 	return err
 }
+
+func (s *Attribute) GetName() (string, error) {
+	size := C.H5Aget_name(s.id, 0, nil)
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+	name := make([]C.char, size+1)
+	size = C.H5Aget_name(s.id, C.size_t(size)+1, &name[0])
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+	return C.GoString(&name[0]), nil
+}
