@@ -189,3 +189,27 @@ func (s *Dataset) Datatype() (*Datatype, error) {
 func (s *Dataset) hasIllegalGoPointer() bool {
 	return s.typ.hasIllegalGoPointer()
 }
+
+// NumAttributes returns the number of attributes in the dataset
+func (s *Dataset) NumAttributes() (uint, error) {
+	var info C.H5O_info2_t
+	err := h5err(C.H5Oget_info(s.id, &info, C.H5O_INFO_NUM_ATTRS))
+	return uint(info.num_attrs), err
+}
+
+// AttributeNameByIndex returns the name of the object at idx.
+func (s *Dataset) AttributeNameByIndex(idx uint) (string, error) {
+	cidx := C.hsize_t(idx)
+	size := C.H5Aget_name_by_idx(s.id, cdot, C.H5_INDEX_NAME, C.H5_ITER_INC, cidx, nil, 0, C.H5P_DEFAULT)
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+
+	name := make([]C.char, size+1)
+	size = C.H5Aget_name_by_idx(s.id, cdot, C.H5_INDEX_NAME, C.H5_ITER_INC, cidx, &name[0], C.size_t(size)+1, C.H5P_DEFAULT)
+
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+	return C.GoString(&name[0]), nil
+}
