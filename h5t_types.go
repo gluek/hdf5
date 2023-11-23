@@ -253,8 +253,8 @@ func NewVarLenType(base_type *Datatype) (*VarLenType, error) {
 }
 
 // IsVariableStr determines whether the VarLenType is a string.
-func (vl *VarLenType) IsVariableStr() bool {
-	return C.H5Tis_variable_str(vl.id) > 0
+func (t *Datatype) IsVariableStr() bool {
+	return C.H5Tis_variable_str(t.id) > 0
 }
 
 type CompoundType struct {
