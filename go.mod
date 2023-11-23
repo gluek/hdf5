@@ -1,3 +1,3 @@
-module gonum.org/v1/hdf5
+module github.com/gluek/hdf5
 
-go 1.13
+go 1.21
