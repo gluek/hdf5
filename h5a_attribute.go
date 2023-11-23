@@ -50,6 +50,16 @@ func (s *Attribute) GetType() Identifier {
 	return Identifier{ftype}
 }
 
+// Datatype returns the HDF5 Datatype of the Attribute. The returned
+// datatype must be closed by the user when it is no longer needed.
+func (s *Attribute) Datatype() (*Datatype, error) {
+	dtype_id := C.H5Aget_type(s.id)
+	if dtype_id < 0 {
+		return nil, fmt.Errorf("couldn't open Datatype from Attribute %q", s.Name())
+	}
+	return NewDatatype(dtype_id), nil
+}
+
 // Close releases and terminates access to an attribute.
 func (s *Attribute) Close() error {
 	return s.closeWith(h5aclose)
