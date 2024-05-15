@@ -159,6 +159,13 @@ func (g *CommonFG) NumObjects() (uint, error) {
 	return uint(info.nlinks), err
 }
 
+// NumAttributes returns the number of attributes in the group
+func (g *Group) NumAttributes() (uint, error) {
+	var info C.H5O_info2_t
+	err := h5err(C.H5Oget_info(g.id, &info, C.H5O_INFO_NUM_ATTRS))
+	return uint(info.num_attrs), err
+}
+
 // ObjectNameByIndex returns the name of the object at idx.
 func (g *CommonFG) ObjectNameByIndex(idx uint) (string, error) {
 	cidx := C.hsize_t(idx)
@@ -169,6 +176,23 @@ func (g *CommonFG) ObjectNameByIndex(idx uint) (string, error) {
 
 	name := make([]C.char, size+1)
 	size = C.H5Lget_name_by_idx(g.id, cdot, C.H5_INDEX_NAME, C.H5_ITER_INC, cidx, &name[0], C.size_t(size)+1, C.H5P_DEFAULT)
+
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+	return C.GoString(&name[0]), nil
+}
+
+// AttributeNameByIndex returns the name of the object at idx.
+func (g *CommonFG) AttributeNameByIndex(idx uint) (string, error) {
+	cidx := C.hsize_t(idx)
+	size := C.H5Aget_name_by_idx(g.id, cdot, C.H5_INDEX_NAME, C.H5_ITER_INC, cidx, nil, 0, C.H5P_DEFAULT)
+	if size < 0 {
+		return "", fmt.Errorf("could not get name")
+	}
+
+	name := make([]C.char, size+1)
+	size = C.H5Aget_name_by_idx(g.id, cdot, C.H5_INDEX_NAME, C.H5_ITER_INC, cidx, &name[0], C.size_t(size)+1, C.H5P_DEFAULT)
 
 	if size < 0 {
 		return "", fmt.Errorf("could not get name")

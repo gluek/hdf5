@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  publish:
+    cmds:
+      - git tag {{.CLI_ARGS}}
+      - git push origin {{.CLI_ARGS}}
+      - go list -m github.com/gluek/hdf5@{{.CLI_ARGS}}
+    env:
+      GOPROXY: proxy.golang.org
