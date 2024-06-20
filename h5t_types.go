@@ -64,7 +64,7 @@ var (
 
 	_go_struct_t reflect.Type = reflect.TypeOf(struct{}{})
 
-	_go_ptr_t reflect.Type = reflect.PtrTo(_go_int_t)
+	_go_ptr_t reflect.Type = reflect.PointerTo(_go_int_t)
 )
 
 type typeMap map[TypeClass]reflect.Type
